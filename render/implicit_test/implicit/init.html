@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<title>Implicit Test</title>
+
+	<script id="vertex-shader" type="x-shader/x-vertex">
+		attribute vec2	vertex_coords;
+		attribute vec2	UV_coords;
+		attribute	float	uv_index;
+		varying		vec2	f_UV_coords;
+		varying		vec2	f_uv_coords;
+		
+		uniform		vec3	u_coords;
+		uniform		vec3	v_coords;
+
+		void main(){
+			int index = int( uv_index );
+			gl_Position = vec4( vertex_coords, 0.0, 1.0 );
+			f_UV_coords = UV_coords;
+			f_uv_coords[ 0 ] = u_coords[ index ];
+			f_uv_coords[ 1 ] = v_coords[ index ];
+		}
+	</script>
+
+	<script id="fragment-shader" type="x-shader/x-fragment">
+		precision mediump float;
+		varying		vec2		f_UV_coords;
+		varying		vec2		f_uv_coords;
+
+		void main(){
+			float U = f_UV_coords[ 0 ];
+			float V = f_UV_coords[ 1 ];
+			float implicit_0 = U * U - V;
+			
+			float u = f_uv_coords[ 0 ];
+			float v = f_uv_coords[ 1 ];
+			float implicit_1 = u * u - v;
+			
+			float color;
+	
+			if( implicit_0 < 0.0 && implicit_1 > 0.0 ){
+				color = 1.0;
+			}
+			else{
+				color = 0.0;
+			}
+			
+			gl_FragColor = color * vec4( 0.0, 1.0, 0.0, 1.0 );
+		}
+	</script>
+	
+	<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+	<script type="text/javascript" src="../Common/initShaders.js"></script>
+	<script type="text/javascript" src="../Common/MV.js"></script>
+	<script type="text/javascript" src="init.js"></script>
+</head>   
+
+<body>
+	
+	<canvas id="gl-canvas" width="350" height="350" style="border-style:solid;border-width:3px;"><!--HW470-->
+		Oops ... your browser doesn't support the HTML5 canvas element
+	</canvas>
+
+	<table>
+	<tr>
+		<td>p0.u</td>
+		<td><input id="p0_u" type="range", min="0.0", max="1.0" step="0.01" value="0.32" /></td>
+		<td id="p0_u_output">0.32</td>
+	</tr>
+	<tr>
+		<td>p0.v</td>
+		<td><input id="p0_v" type="range", min="0.0", max="1.0" step="0.01" value="0.05" /></td>
+		<td id="p0_v_output">0.05</td>
+	</tr>
+	<tr>
+		<td>p1.u</td>
+		<td><input id="p1_u" type="range", min="0.0", max="1.0" step="0.01" value="0.5" /></td>
+		<td id="p1_u_output">0.5</td>
+	</tr>
+	<tr>
+		<td>p1.v</td>
+		<td><input id="p1_v" type="range", min="0.0", max="1.0" step="0.01" value="0.1" /></td>
+		<td id="p1_v_output">0.1</td>
+	</tr>
+	<tr>
+		<td>p2.u</td>
+		<td><input id="p2_u" type="range", min="0.0", max="1.0" step="0.01" value="0.96" /></td>
+		<td id="p2_u_output">0.96</td>
+	</tr>
+	<tr>
+		<td>p2.v</td>
+		<td><input id="p2_v" type="range", min="0.0", max="1.0" step="0.01" value="0.86" /></td>
+		<td id="p2_v_output">0.86</td>
+	</tr>
+	</table>
+	
+	<table>
+	<tr>
+		<td>The complexity of triangulation could be offset by increasing the robustness of implicit equation cases.  Above is a illustration of an implicit equation that handles two curves "at once".</td>
+	</tr>
+	<tr>
+		<td><br>Equation = ~[(U * U) - V] & [(u * u) - v]</td>
+	</tr>
+	<tr>
+		<td><br>The uppercase letter repesent the outer curve in the above rendering which is fixed.  The inner curve can be edited by altering the sliders.<br><br><i>Note: I might have the texture coordinates on the inner curve reverse but that shouldnt matter.</i></td>
+	</tr>
+	</table>
+</body>
+</html>
