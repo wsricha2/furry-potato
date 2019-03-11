@@ -1,4 +1,4 @@
-varying	vec2			f_UV_coord;
+varying	vec2		f_UV_coord;
 uniform	sampler2D	mytexture;
 
 void main( void ){
